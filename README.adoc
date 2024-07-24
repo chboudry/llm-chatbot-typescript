@@ -1,6 +1,6 @@
 Code from neo4j but with Azure Open AI instead of Open AI
 
-https://js.langchain.com/v0.1/docs/integrations/text_embedding/azure_openai/
+https://v02.api.js.langchain.com/modules/langchain_openai.html
 
 = Build an Neo4j-backed Chatbot using TypeScript
 
