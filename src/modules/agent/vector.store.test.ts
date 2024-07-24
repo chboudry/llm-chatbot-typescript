@@ -1,17 +1,19 @@
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { AzureOpenAIEmbeddings } from "@langchain/openai";
+//import { OpenAIEmbeddings } from "@langchain/openai";
 import initVectorStore from "./vector.store";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import { close } from "../graph";
+
 
 describe("Vector Store", () => {
   afterAll(() => close());
 
   it("should instantiate a new vector store", async () => {
-    const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY as string,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    const embeddings = new AzureOpenAIEmbeddings({
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME, 
+      azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_OPENAI_API_EMBEDDING_DEPLOYMENT_NAME, 
+      azureOpenAIApiVersion: "2024-06-01",
     });
     const vectorStore = await initVectorStore(embeddings);
     expect(vectorStore).toBeInstanceOf(Neo4jVectorStore);
@@ -21,11 +23,11 @@ describe("Vector Store", () => {
 
   it("should create a test index", async () => {
     const indexName = "test-index";
-    const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY as string,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    const embeddings = new AzureOpenAIEmbeddings({
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME, 
+      azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_OPENAI_API_EMBEDDING_DEPLOYMENT_NAME, 
+      azureOpenAIApiVersion: "2024-06-01",
     });
 
     const index = await Neo4jVectorStore.fromTexts(

@@ -5,10 +5,11 @@ import { Embeddings } from "langchain/embeddings/base";
 import { BaseChatModel } from "langchain/chat_models/base";
 import { Runnable } from "@langchain/core/runnables";
 import { Neo4jGraph } from "@langchain/community/graphs/neo4j_graph";
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from "@langchain/openai";
 
 describe("Langchain Agent", () => {
-  let llm: BaseChatModel;
-  let embeddings: Embeddings;
+  let llm: any;
+  let embeddings: any;
   let graph: Neo4jGraph;
   let executor: Runnable;
 
@@ -22,20 +23,18 @@ describe("Langchain Agent", () => {
       database: process.env.NEO4J_DATABASE as string | undefined,
     });
 
-    llm = new ChatOpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-      modelName: "gpt-3.5-turbo",
-      temperature: 0,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    const llm = new AzureChatOpenAI({
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_LLM_DEPLOYMENT_NAME,
+      azureOpenAIApiVersion: "2024-06-01",
     });
 
-    embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY as string,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    const embeddings = new AzureOpenAIEmbeddings({
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY, // In Node.js defaults to process.env.AZURE_OPENAI_API_KEY
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME, 
+      azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_OPENAI_API_EMBEDDING_DEPLOYMENT_NAME, 
+      azureOpenAIApiVersion: "2024-06-01", // In Node.js defaults to process.env.AZURE_OPENAI_API_VERSION
     });
 
     executor = await initAgent(llm, embeddings, graph);

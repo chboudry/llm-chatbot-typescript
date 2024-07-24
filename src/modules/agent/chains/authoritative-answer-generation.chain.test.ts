@@ -5,22 +5,21 @@ import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import initGenerateAuthoritativeAnswerChain from "./authoritative-answer-generation.chain";
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from "@langchain/openai";
 
 describe("Authoritative Answer Generation Chain", () => {
-  let llm: BaseChatModel;
+  let llm: any;
   let chain: RunnableSequence;
   let evalChain: RunnableSequence<any, any>;
 
   beforeAll(async () => {
     config({ path: ".env.local" });
 
-    llm = new ChatOpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-      modelName: "gpt-3.5-turbo",
-      temperature: 0,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    llm = new AzureChatOpenAI({
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_LLM_DEPLOYMENT_NAME,
+      azureOpenAIApiVersion: "2024-06-01",
     });
 
     chain = await initGenerateAuthoritativeAnswerChain(llm);

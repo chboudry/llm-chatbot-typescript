@@ -9,11 +9,12 @@ import initCypherRetrievalChain, {
   getResults,
 } from "./cypher-retrieval.chain";
 import { close } from "../../../graph";
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from "@langchain/openai";
 
 describe("Cypher QA Chain", () => {
   let graph: Neo4jGraph;
-  let llm: BaseChatModel;
-  let chain: Runnable;
+  let llm: any;
+  let chain: any;
 
   beforeAll(async () => {
     config({ path: ".env.local" });
@@ -25,13 +26,11 @@ describe("Cypher QA Chain", () => {
       database: process.env.NEO4J_DATABASE as string | undefined,
     });
 
-    llm = new ChatOpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-      modelName: "gpt-3.5-turbo",
-      temperature: 0,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    llm = new AzureChatOpenAI({
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_LLM_DEPLOYMENT_NAME,
+      azureOpenAIApiVersion: "2024-06-01",
     });
 
     chain = await initCypherRetrievalChain(llm, graph);

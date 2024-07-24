@@ -2,26 +2,25 @@ import { config } from "dotenv";
 import initGenerateAnswerChain from "./answer-generation.chain";
 import { BaseChatModel } from "langchain/chat_models/base";
 import { RunnableSequence } from "@langchain/core/runnables";
-import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
+import { AzureOpenAI, AzureChatOpenAI, AzureOpenAIEmbeddings } from "@langchain/openai";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 describe("Speculative Answer Generation Chain", () => {
-  let llm: BaseChatModel;
+  let llm: any;
   let chain: RunnableSequence;
   let evalChain: RunnableSequence<any, any>;
 
   beforeAll(async () => {
     config({ path: ".env.local" });
 
-    llm = new ChatOpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-      modelName: "gpt-3.5-turbo",
-      temperature: 0,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    llm = new AzureChatOpenAI({
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_LLM_DEPLOYMENT_NAME,
+      azureOpenAIApiVersion: "2023-12-01-preview",
     });
+    
 
     chain = await initGenerateAnswerChain(llm);
 

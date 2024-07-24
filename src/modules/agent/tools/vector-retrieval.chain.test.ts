@@ -7,11 +7,12 @@ import initVectorRetrievalChain from "./vector-retrieval.chain";
 import { Neo4jGraph } from "@langchain/community/graphs/neo4j_graph";
 import { AgentToolInput } from "../agent.types";
 import { close } from "../../graph";
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from "@langchain/openai";
 
 describe("Vector Retrieval Chain", () => {
   let graph: Neo4jGraph;
-  let llm: BaseChatModel;
-  let embeddings: Embeddings;
+  let llm: any;
+  let embeddings: any;
   let chain: Runnable<AgentToolInput, string>;
 
   beforeAll(async () => {
@@ -24,20 +25,18 @@ describe("Vector Retrieval Chain", () => {
       database: process.env.NEO4J_DATABASE as string | undefined,
     });
 
-    llm = new ChatOpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-      modelName: "gpt-3.5-turbo",
-      temperature: 0,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    llm = new AzureChatOpenAI({
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_LLM_DEPLOYMENT_NAME,
+      azureOpenAIApiVersion: "2024-06-01",
     });
 
-    embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY as string,
-      configuration: {
-        baseURL: process.env.OPENAI_API_BASE,
-      },
+    embeddings = new AzureOpenAIEmbeddings({
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME, 
+      azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_OPENAI_API_EMBEDDING_DEPLOYMENT_NAME, 
+      azureOpenAIApiVersion: "2024-06-01",
     });
 
     chain = await initVectorRetrievalChain(llm, embeddings);
